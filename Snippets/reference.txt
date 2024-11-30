@@ -1,0 +1,28 @@
+using System;
+
+internal class MyClass {
+  internal string Name { get; set; } = string.Empty;
+  internal string Text { get; set; } = string.Empty;
+}
+
+internal static void Do() {
+  MyClass myClass = new() {
+    Name = "Hans",
+    Text = "init",
+  };
+
+  Console.WriteLine($"       init: {myClass.Name}.{myClass.Text}");
+
+  myClass = ChangeImportParameter(myClass, "changed");
+  Console.WriteLine($"with return: {myClass.Name}.{myClass.Text}");
+
+  ChangeImportParameter(myClass, "changed again");
+  Console.WriteLine($" w/o return: {myClass.Name}.{myClass.Text}");
+}
+
+internal static MyClass ChangeImportParameter(MyClass myClass, string text) {
+  myClass.Text = text;
+  return myClass;
+}
+
+Do();

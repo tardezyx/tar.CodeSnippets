@@ -1,0 +1,57 @@
+using System;
+using System.Threading.Tasks;
+
+// define form
+public partial class MyForm { //: Form {
+  // constructor, onload, etc.
+  //...
+
+  // define delegate
+  internal delegate void DelegateCallbackForText(string text);
+
+  // define method to update the UI control
+  internal void UpdateOutput(string text) {
+    //if (InvokeRequired) {
+    if (!text.StartsWith("invoked")) {
+      DelegateCallbackForText delegateCallback = new(UpdateOutput);
+      //Invoke(delegateCallback, [$"invoked [thread: {Environment.CurrentManagedThreadId}]: {text}"]);
+      delegateCallback($"invoked [thread: {Environment.CurrentManagedThreadId}]: {text}");
+    } else {
+      //tbxOutput.Text = text;
+      Console.WriteLine(text);
+    }
+  }
+}
+
+// call via non-UI thread
+internal static async Task UiInvoke(MyForm myForm) {
+  await Task.Run( // => non-UI thread
+    () => {
+      myForm.UpdateOutput("Hello World");
+    }
+  );
+}
+
+// this delegate callback was just for demonstrating purposes
+
+// a better approach would be to receive the result from the non-UI thread
+// and then fill the UI control with the result when you are back in the UI thread:
+internal static async Task UiInvoke2(MyForm myForm) {
+  string output = string.Empty;
+  await Task.Run( // => non-UI thread
+    () => {
+      output = "better approach";
+    }
+  );
+
+  // => back in UI thread
+
+  // now, instead of using an additional method and delegate,
+  // you can fill the UI control directly
+  // (or update a class/structure an UI control is bound to)
+  //myForm.tbxOutput.Text = output;
+  Console.WriteLine(output);
+}
+
+await UiInvoke(new MyForm());
+await UiInvoke2(new MyForm());

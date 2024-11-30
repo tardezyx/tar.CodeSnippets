@@ -1,0 +1,20 @@
+using System;
+
+// a delegate can be used as reference on methods who have the same parameters
+
+private static void ShowStrings1(string string1, string string2) {
+  Console.WriteLine(string1 + " " + string2);
+}
+
+private static void ShowStrings2(string string1, string string2) {
+  Console.WriteLine(string2 + " " + string1);
+}
+
+private delegate void StringDelegate(string s1, string s2);
+
+StringDelegate delegate1 = new(ShowStrings1);
+StringDelegate delegate2 = new(ShowStrings2);
+
+// it remembers the target (static or object) and the method
+delegate1("Hello", "World");
+delegate1("Hello", "World");

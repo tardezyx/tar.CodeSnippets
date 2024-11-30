@@ -1,0 +1,16 @@
+using System;
+
+// a delegate is a type-safe pointer to a method
+// and thereby a method reference (can have parameters and a return value)
+
+// these lines define delegate types:
+private delegate int IntDelegateWithResult(int a);
+private delegate void StringDelegate(string s, string x);
+private delegate void StringDelegateWithReference(ref string a, ref string b);
+
+// any method with the same signature as the delegate can be assigned to the delegate
+
+// delegates are used to:
+// - promote reusability of code and implement flexibility
+// - notify which method to call when an event is triggered
+// - define callback methods

@@ -1,0 +1,12 @@
+/*
+Sometimes, you need to do work in a singleton constructor which may throw an exception,
+but might not be fatal to the whole application. Potentially, your application may be
+able to fix the problem and want to try again. Using type initializers to construct the
+singleton becomes problematic at this stage. Different runtimes handle this case
+differently, but I don't know of any which do the desired thing (running the type
+initializer again), and even if one did, your code would be broken on other runtimes.
+
+To avoid these problems, I'd suggest using variant 2 - just use a simple lock, and go
+through the check each time, building the instance in the method/property if it hasn't
+already been successfully built.
+*/

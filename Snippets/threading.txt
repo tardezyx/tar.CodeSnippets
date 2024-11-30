@@ -1,0 +1,23 @@
+using System;
+using System.Threading;
+
+internal static class ThreadSafe {
+  private static bool _done;
+  private static readonly object _locker = new();
+
+  internal static void DoSomething() {
+    new Thread(Go).Start();
+    Go();
+  }
+
+  private static void Go() {
+    lock (_locker) {
+      if (!_done) {
+        Console.WriteLine($"[thread: {Environment.CurrentManagedThreadId}] Done");
+        _done = true;
+      }
+    }
+  }
+}
+
+ThreadSafe.DoSomething();

@@ -1,0 +1,38 @@
+/*
+In many cases, you won't actually require full laziness - unless your class
+initialization does something particularly time-consuming, or has some
+side-effect elsewhere, it's probably fine to leave out the explicit static
+constructor shown above. This can increase performance as it allows the JIT
+compiler to make a single check (for instance at the start of a method) to
+ensure that the type has been initialized, and then assume it from then on.
+If your singleton instance is referenced within a relatively tight loop,
+this can make a (relatively) significant performance difference. You should
+decide whether or not fully lazy instantiation is required, and document
+this decision appropriately within the class.
+
+A lot of the reason for this page's existence is people trying to be clever,
+and thus coming up with the double-checked locking algorithm. There is an
+attitude of locking being expensive which is common and misguided. I've
+written a very quick benchmark which just acquires singleton instances in
+a loop a billion ways, trying different variants. It's not terribly
+scientific, because in real life you may want to know how fast it is if
+each iteration actually involved a call into a method fetching the
+singleton, etc. However, it does show an important point.
+
+On my laptop, the slowest solution (by a factor of about 5) is the locking
+one (solution 2). Is that important? Probably not, when you bear in mind
+that it still managed to acquire the singleton a billion times in under
+40 seconds. (Note: this article was originally written quite a while ago,
+I'd expect better performance now.) That means that if you're "only"
+acquiring the singleton four hundred thousand times per second, the cost
+of the acquisition is going to be 1% of the performance - so improving it
+isn't going to do a lot. Now, if you are acquiring the singleton that
+often - isn't it likely you're using it within a loop? If you care that
+much about improving the performance a little bit, why not declare a
+local variable outside the loop, acquire the singleton once and then loop.
+Bingo, even the slowest implementation becomes easily adequate.
+
+I would be very interested to see a real world application where the
+difference between using simple locking and using one of the faster
+solutions actually made a significant performance difference.
+*/

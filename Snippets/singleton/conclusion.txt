@@ -1,0 +1,22 @@
+/*
+There are various different ways of implementing the singleton pattern in C#.
+
+My personal preference is for solution 4: the only time I would normally go away from it
+is if I needed to be able to call other static methods without triggering initialization,
+or if I needed to know whether or not the singleton has already been instantiated.
+I don't remember the last time I was in that situation, assuming I even have.
+In that case, I'd probably go for solution 2, which is still nice and easy to get right.
+
+Solution 5 is elegant, but trickier than 2 or 4, and as I said above, the benefits it
+provides seem to only be rarely useful.
+
+Solution 6 is a simpler way to achieve laziness, if you're using .NET 4.
+It also has the advantage that it's obviously lazy.
+
+I currently tend to still use solution 4, simply through habit - but if I were working
+with inexperienced developers I'd quite possibly go for solution 6 to start with as an
+easy and universally applicable pattern.
+
+(I wouldn't use solution 1 because it's broken,
+and I wouldn't use solution 3 because it has no benefits over 5.)
+*/

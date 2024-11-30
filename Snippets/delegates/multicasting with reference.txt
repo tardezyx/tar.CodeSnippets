@@ -1,0 +1,31 @@
+using System;
+
+// prepare methods
+private static void ShowStringsWithReference1(ref string x1, ref string x2) {
+  x1 = x1.Replace("l", "7");
+  x2 = x2.Replace("l", "7");
+  Console.WriteLine(x1 + " " + x2);
+}
+
+private static void ShowStringsWithReference2(ref string x1, ref string x2) {
+  x1 = x1.ToUpper();
+  x2 = x2.ToUpper();
+  Console.WriteLine(x1 + " " + x2);
+}
+
+// define delegate type
+private delegate void StringDelegateWithReference(ref string a, ref string b);
+
+// define delegates
+StringDelegateWithReference delegateMulticastingWithReference;
+StringDelegateWithReference delegate1 = new(ShowStringsWithReference1);
+StringDelegateWithReference delegate2 = new(ShowStringsWithReference2);
+
+// chain multicast
+delegateMulticastingWithReference  = delegate1;
+delegateMulticastingWithReference += delegate2;
+
+// reference variables are necessary to be passed and manipulated
+string a = "Hello";
+string b = "World";
+delegateMulticastingWithReference(ref a, ref b);

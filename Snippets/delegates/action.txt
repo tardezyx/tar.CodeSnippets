@@ -1,0 +1,18 @@
+using System;
+
+// an action is a simple delegate without return value
+Action action = new(
+  () => {
+    Console.WriteLine("triggered via action");
+  }
+);
+
+// you can as well put parameters to it
+Action<string> actionWithParameter = new(
+  (text) => {
+    Console.WriteLine(text);
+  }
+);
+
+action();
+actionWithParameter("some text via parameter");

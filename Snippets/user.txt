@@ -1,0 +1,26 @@
+using System.DirectoryServices.AccountManagement;
+using System.Security.Principal;
+
+  internal static class User {
+    internal static List<UserPrincipal> GetUSer() {
+      return GetUsers(
+        new("S-1-5-32-544") // SID: administrators
+      );
+    }
+
+    private static List<UserPrincipal> GetUsers(SecurityIdentifier groupIdentifier) {
+      List<UserPrincipal> result = [];
+
+      PrincipalContext principalContext = new(ContextType.Machine);
+      PrincipalSearcher principalSearcher = new(new UserPrincipal(principalContext));
+      PrincipalSearchResult<Principal> principalUsers = principalSearcher.FindAll();
+
+      foreach (UserPrincipal userPrincipal in principalUsers.Cast<UserPrincipal>()) {
+        if (userPrincipal.GetGroups().FirstOrDefault(x => x.Sid == groupIdentifier) is not null) {
+          result.Add(userPrincipal);
+        }
+      }
+
+      return result;
+    }
+  }

@@ -1,0 +1,37 @@
+using System;
+
+// define the class
+internal class TestDelegateClass {
+  // define delegate type with available event parameters
+  internal delegate void DelegateForEvent(int a);
+
+  // define event for the delegate type
+  internal event DelegateForEvent EventViaDelegate;
+
+  // constructor
+  internal TestDelegateClass() {
+    // assign a method to the event trigger
+    EventViaDelegate += new DelegateForEvent(EventLogic);
+
+    // you could also use one of those assignments:
+    EventViaDelegate += EventLogic;
+    EventViaDelegate += (a) => Console.WriteLine(a.ToString());
+    EventViaDelegate += (a) => {
+      string output = a.ToString();
+      Console.WriteLine(output);
+    };
+  }
+
+  internal void Calculate(int a, int b) {
+    int sum = a + b;
+    EventViaDelegate(sum); // event is triggered
+  }
+  
+  private void EventLogic(int a) {
+    Console.WriteLine(a.ToString());
+  }
+}
+
+// create a class instance and call the method which triggers the event
+TestDelegateClass delegateClass = new();
+delegateClass.Calculate(122, 77);

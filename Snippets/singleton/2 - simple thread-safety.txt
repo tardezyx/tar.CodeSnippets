@@ -1,0 +1,36 @@
+public sealed class SingletonV2 {
+  SingletonV2() { }
+  private static SingletonV2? _instance;
+  private static readonly object _padlock = new();
+  
+  public static SingletonV2 Instance {
+    get {
+      lock (_padlock) {
+        _instance ??= new();
+        return _instance;
+      }
+    }
+  }
+}
+
+/*
+This implementation is thread-safe. The thread takes out a lock on a shared object,
+and then checks whether or not the instance has been created before creating the
+instance. This takes care of the memory barrier issue (as locking makes sure that
+all reads occur logically after the lock acquire, and unlocking makes sure that all
+writes occur logically before the lock release) and ensures that only one thread
+will create an instance (as only one thread can be in that part of the code at a
+time - by the time the second thread enters it,the first thread will have created
+the instance, so the expression will evaluate to false). Unfortunately, performance
+suffers as a lock is acquired every time the instance is requested.
+
+Note that instead of locking on typeof(Singleton) as some versions of this
+implementation do, I lock on the value of a static variable which is private to the
+class. Locking on objects which other classes can access and lock on (such as the
+type) risks performance issues and even deadlocks. This is a general style
+preference of mine - wherever possible, only lock on objects specifically created
+for the purpose of locking, or which document that they are to be locked on for
+specific purposes (e.g. for waiting/pulsing a queue). Usually such objects should
+be private to the class they are used in. This helps to make writing thread-safe
+applications significantly easier. 
+*/

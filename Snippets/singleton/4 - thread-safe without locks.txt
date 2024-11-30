@@ -1,0 +1,43 @@
+public sealed class SingletonV4 {
+  // explicit static constructor to tell C# compiler not to mark type as beforefieldinit
+  static SingletonV4() { }
+  private SingletonV4() { }
+  private static readonly SingletonV4 _instance = new();
+  public static SingletonV4 Instance { get { return _instance; } }
+}
+
+/*
+As you can see, this is really extremely simple - but why is it thread-safe
+and how lazy is it? Well, static constructors in C# are specified to execute
+only when an instance of the class is created or a static member is referenced,
+and to execute only once per AppDomain. Given that this check for the type being
+newly constructed needs to be executed whatever else happens, it will be faster
+than adding extra checking as in the previous examples. There are a couple of
+wrinkles, however:
+
+1) It's not as lazy as the other implementations. In particular, if you have
+static members other than Instance, the first reference to those members will
+involve creating the instance. This is corrected in the next implementation.
+
+2) There are complications if one static constructor invokes another which
+invokes the first again. Look in the .NET specifications (currently section
+9.5.3 of partition II) for more details about the exact nature of type
+initializers - they're unlikely to bite you, but it's worth being aware of the
+consequences of static constructors which refer to each other in a cycle.
+
+3) The laziness of type initializers is only guaranteed by .NET when the type
+isn't marked with a special flag called beforefieldinit. Unfortunately, the
+C# compiler (as provided in the .NET 1.1 runtime, at least) marks all types
+which don't have a static constructor (i.e. a block which looks like a
+constructor but is marked static) as beforefieldinit. I now have an article
+with more details about this issue: https://csharpindepth.com/Articles/BeforeFieldInit
+Also note that it affects performance, see below.
+
+One shortcut you can take with this implementation (and only this one) is to
+just make instance a public static readonly variable, and get rid of the
+property entirely. This makes the basic skeleton code absolutely tiny! Many
+people, however, prefer to have a property in case further action is needed
+in future, and JIT inlining is likely to make the performance identical.
+(Note that the static constructor itself is still required if you require
+laziness.)
+*/
